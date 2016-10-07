@@ -1,8 +1,8 @@
-# pac
+# sysproxy
 
-[pac](https://github.com/getlantern/pac) is a simple Go library to toggle on and
-off pac(proxy auto configuration) for Windows, Mac OS and Linux. It will extract
-a helper tool and use it to actually chage pac.
+[sysproxy](https://github.com/getlantern/sysproxy) is a simple Go library to
+toggle the system proxy on and off for Windows, Mac OS and Linux. It will
+extract a helper tool and use it to actually change the system proxy settings.
 
 ```go
 pac.EnsureHelperToolPresent(fullPath, prompt, iconFullPath)
