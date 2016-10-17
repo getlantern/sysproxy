@@ -1,6 +1,6 @@
 // +build !darwin
 
-package pac
+package sysproxy
 
 import (
 	"github.com/getlantern/byteexec"

@@ -1,7 +1,8 @@
-package pac
+package sysproxy
 
 import (
 	"fmt"
+	"net"
 	"os/exec"
 	"sync"
 
@@ -27,37 +28,47 @@ var (
 func EnsureHelperToolPresent(path string, prompt string, iconFullPath string) (err error) {
 	mu.Lock()
 	defer mu.Unlock()
-	pacBytes, err := Asset("pac")
+	proxyBytes, err := Asset("sysproxy")
 	if err != nil {
 		return fmt.Errorf("Unable to access pac asset: %v", err)
 	}
-	be, err = byteexec.New(pacBytes, path)
+	be, err = byteexec.New(proxyBytes, path)
 	if err != nil {
 		return fmt.Errorf("Unable to extract helper tool: %v", err)
 	}
 	return ensureElevatedOnDarwin(be, prompt, iconFullPath)
 }
 
-/* On tells OS to configure proxy through `pacUrl` */
-func On(pacUrl string) (err error) {
+/* On tells OS to configure proxy through `addr` */
+func On(addr string) (err error) {
+	host, port, err := net.SplitHostPort(addr)
+	if err != nil {
+		return fmt.Errorf("Unable to parse address %v: %v", addr, err)
+	}
+
 	mu.Lock()
 	defer mu.Unlock()
 	if be == nil {
 		return fmt.Errorf("call EnsureHelperToolPresent() first")
 	}
 
-	cmd := be.Command("on", pacUrl)
+	cmd := be.Command("on", host, port)
 	return run(cmd)
 }
 
 /* Off sets proxy mode back to direct/none */
-func Off(pacUrl string) (err error) {
+func Off(addr string) (err error) {
+	host, port, err := net.SplitHostPort(addr)
+	if err != nil {
+		return fmt.Errorf("Unable to parse address %v: %v", addr, err)
+	}
+
 	mu.Lock()
 	defer mu.Unlock()
 	if be == nil {
 		return fmt.Errorf("call EnsureHelperToolPresent() first")
 	}
-	cmd := be.Command("off", pacUrl)
+	cmd := be.Command("off", host, port)
 	return run(cmd)
 }
 
