@@ -16,10 +16,10 @@ fi
 
 BINPATH=../sysproxy-cmd/binaries
 
-# mv $BINPATH/windows/sysproxy.exe $BINPATH/windows/sysproxy
-# osslsigncode sign -pkcs12 "$BNS_CERT" -pass "$BNS_CERT_PASS" -in $BINPATH/windows/sysproxy -out $BINPATH/windows/sysproxy || die "Could not sign windows"
-# go-bindata -nomemcopy -nocompress -pkg sysproxy -prefix $BINPATH/windows -o sysproxy_bytes_windows.go $BINPATH/windows
-# mv $BINPATH/windows/sysproxy $BINPATH/windows/sysproxy.exe
+mv $BINPATH/windows/sysproxy.exe $BINPATH/windows/sysproxy
+osslsigncode sign -pkcs12 "$BNS_CERT" -pass "$BNS_CERT_PASS" -in $BINPATH/windows/sysproxy -out $BINPATH/windows/sysproxy || die "Could not sign windows"
+go-bindata -nomemcopy -nocompress -pkg sysproxy -prefix $BINPATH/windows -o sysproxy_bytes_windows.go $BINPATH/windows
+mv $BINPATH/windows/sysproxy $BINPATH/windows/sysproxy.exe
 
 # go-bindata -nomemcopy -nocompress -pkg sysproxy -prefix $BINPATH/linux_386 -o sysproxy_bytes_linux_386.go $BINPATH/linux_386
 # go-bindata -nomemcopy -nocompress -pkg sysproxy -prefix $BINPATH/linux_amd64 -o sysproxy_bytes_linux_amd64.go $BINPATH/linux_amd64
