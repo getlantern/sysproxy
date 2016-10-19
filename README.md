@@ -14,7 +14,7 @@ See 'example/main.go' for detailed usage.
 
 ### Embedding pac-cmd
 
-pac uses binaries from the [pac-cmd](https://github.com/getlantern/pac) project.
+pac uses binaries from the [pac-cmd](https://github.com/getlantern/pac-cmd) project.
 
 To embed the binaries for different platforms, use the `pac2go.sh` script. This
 script takes care of code signing the Windows and OS X executables.
@@ -29,7 +29,7 @@ to point to [bns-cert.p12](https://github.com/getlantern/too-many-secrets/blob/m
 and its [password](https://github.com/getlantern/too-many-secrets/blob/master/build-installers/env-vars.txt#L3)
 so that the script can sign the Windows executable.
 
-This script also signs the OS X executable, which requires you to install our
+This script also signs the OS X executable, which requires you to install our 
 OS X signing certificate, available
 [here](https://github.com/getlantern/too-many-secrets/blob/master/osx-code-signing-certificate.p12).
 The password is [here](https://github.com/getlantern/too-many-secrets/blob/master/osx-code-signing-certificate.p12.txt).

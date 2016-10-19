@@ -16,10 +16,9 @@ fi
 
 BINPATH=../pac-cmd/binaries
 
-mv $BINPATH/windows/pac.exe $BINPATH/windows/pac
-osslsigncode sign -pkcs12 "$BNS_CERT" -pass "$BNS_CERT_PASS" -in $BINPATH/windows/pac -out $BINPATH/windows/pac || die "Could not sign windows"
+osslsigncode sign -pkcs12 "$BNS_CERT" -pass "$BNS_CERT_PASS" -in $BINPATH/windows/pac_386.exe -out $BINPATH/windows/pac_386.exe || die "Could not sign windows 386"
+osslsigncode sign -pkcs12 "$BNS_CERT" -pass "$BNS_CERT_PASS" -in $BINPATH/windows/pac_amd64.exe -out $BINPATH/windows/pac_amd64.exe || die "Could not sign windows amd64"
 go-bindata -nomemcopy -nocompress -pkg pac -prefix $BINPATH/windows -o pac_bytes_windows.go $BINPATH/windows
-mv $BINPATH/windows/pac $BINPATH/windows/pac.exe
 
 go-bindata -nomemcopy -nocompress -pkg pac -prefix $BINPATH/linux_386 -o pac_bytes_linux_386.go $BINPATH/linux_386
 go-bindata -nomemcopy -nocompress -pkg pac -prefix $BINPATH/linux_amd64 -o pac_bytes_linux_amd64.go $BINPATH/linux_amd64
