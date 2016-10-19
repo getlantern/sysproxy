@@ -1,23 +1,24 @@
-# pac
+# sysproxy
 
-[pac](https://github.com/getlantern/pac) is a simple Go library to toggle on and
-off pac(proxy auto configuration) for Windows, Mac OS and Linux. It will extract
-a helper tool and use it to actually chage pac.
+[sysproxy](https://github.com/getlantern/sysproxy) is a simple Go library to
+toggle the system proxy on and off for Windows, Mac OS and Linux. It will
+extract a helper tool and use it to actually change the system proxy settings.
 
 ```go
-pac.EnsureHelperToolPresent(fullPath, prompt, iconFullPath)
-pac.On(pacUrl string)
-pac.Off()
+sysproxy.EnsureHelperToolPresent(fullPath, prompt, iconFullPath)
+sysproxy.On(proxyAddr string)
+sysproxy.Off()
 ```
 
 See 'example/main.go' for detailed usage.
 
-### Embedding pac-cmd
+### Embedding sysproxy-cmd
 
-pac uses binaries from the [pac-cmd](https://github.com/getlantern/pac-cmd) project.
+sysproxy uses binaries from the
+[sysproxy-cmd](https://github.com/getlantern/sysproxy-cmd) project.
 
-To embed the binaries for different platforms, use the `pac2go.sh` script. This
-script takes care of code signing the Windows and OS X executables.
+To embed the binaries for different platforms, use the `sysproxy2go.sh` script.
+This script takes care of code signing the Windows and OS X executables.
 
 This script signs the Windows executable, which requires that
 [osslsigncode](http://sourceforge.net/projects/osslsigncode/) utility be
@@ -29,7 +30,7 @@ to point to [bns-cert.p12](https://github.com/getlantern/too-many-secrets/blob/m
 and its [password](https://github.com/getlantern/too-many-secrets/blob/master/build-installers/env-vars.txt#L3)
 so that the script can sign the Windows executable.
 
-This script also signs the OS X executable, which requires you to install our 
+This script also signs the OS X executable, which requires you to install our
 OS X signing certificate, available
 [here](https://github.com/getlantern/too-many-secrets/blob/master/osx-code-signing-certificate.p12).
 The password is [here](https://github.com/getlantern/too-many-secrets/blob/master/osx-code-signing-certificate.p12.txt).

@@ -1,7 +1,8 @@
-package pac
+package sysproxy
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"os/exec"
 	"runtime"
@@ -13,7 +14,7 @@ import (
 )
 
 var (
-	log = golog.LoggerFor("pac")
+	log = golog.LoggerFor("sysproxy")
 
 	mu sync.Mutex
 	be *byteexec.Exec
@@ -30,7 +31,7 @@ var (
 func EnsureHelperToolPresent(path string, prompt string, iconFullPath string) (err error) {
 	mu.Lock()
 	defer mu.Unlock()
-	assertName := "pac"
+	assertName := "sysproxy"
 	// Load different binaries for 32bit and 64bit Windows respectively.
 	if runtime.GOOS == "windows" {
 		suffix := "_386.exe"
@@ -41,44 +42,54 @@ func EnsureHelperToolPresent(path string, prompt string, iconFullPath string) (e
 		}
 		assertName = assertName + suffix
 	}
-	pacBytes, err := Asset(assertName)
+	sysproxyBytes, err := Asset(assertName)
 	if err != nil {
-		return fmt.Errorf("Unable to access pac asset: %v", err)
+		return fmt.Errorf("Unable to access sysproxy asset: %v", err)
 	}
-	be, err = byteexec.New(pacBytes, path)
+	be, err = byteexec.New(sysproxyBytes, path)
 	if err != nil {
 		return fmt.Errorf("Unable to extract helper tool: %v", err)
 	}
 	return ensureElevatedOnDarwin(be, prompt, iconFullPath)
 }
 
-/* On tells OS to configure proxy through `pacUrl` */
-func On(pacUrl string) (err error) {
+/* On tells OS to configure proxy through `sysproxyUrl` */
+func On(addr string) (err error) {
+	host, port, err := net.SplitHostPort(addr)
+	if err != nil {
+		return fmt.Errorf("Unable to parse address %v: %v", addr, err)
+	}
+
 	mu.Lock()
 	defer mu.Unlock()
 	if be == nil {
 		return fmt.Errorf("call EnsureHelperToolPresent() first")
 	}
 
-	cmd := be.Command("on", pacUrl)
+	cmd := be.Command("on", host, port)
 	if err := run(cmd); err != nil {
 		return err
 	}
-	return verify(pacUrl)
+	return verify(addr)
 }
 
 /* Off sets proxy mode back to direct/none */
-func Off(pacUrl string) (err error) {
+func Off(addr string) (err error) {
+	host, port, err := net.SplitHostPort(addr)
+	if err != nil {
+		return fmt.Errorf("Unable to parse address %v: %v", addr, err)
+	}
+
 	mu.Lock()
 	defer mu.Unlock()
 	if be == nil {
 		return fmt.Errorf("call EnsureHelperToolPresent() first")
 	}
-	cmd := be.Command("off", pacUrl)
+	cmd := be.Command("off", host, port)
 	if err := run(cmd); err != nil {
 		return err
 	}
-	return verify(pacUrl)
+	return verify(addr)
 }
 
 func run(cmd *exec.Cmd) error {
