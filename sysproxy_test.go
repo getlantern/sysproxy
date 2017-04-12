@@ -9,7 +9,7 @@ import (
 )
 
 func TestGetOutput(t *testing.T) {
-	path := path.Join(os.TempDir(), "pac")
+	path := path.Join(os.TempDir(), "sysproxy")
 	err := EnsureHelperToolPresent(path, "For test purpose", "")
 	assert.NoError(t, err, "should install helper tool")
 	err = On("localhost:8888")

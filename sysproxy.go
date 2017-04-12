@@ -3,6 +3,7 @@ package sysproxy
 import (
 	"fmt"
 	"net"
+	"os"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -33,7 +34,13 @@ func EnsureHelperToolPresent(path string, prompt string, iconFullPath string) (e
 	assetName := "sysproxy"
 	// Load different binaries for 32bit and 64bit Windows respectively.
 	if runtime.GOOS == "windows" {
-		assetName = assetName + "_386.exe"
+		suffix := "_386.exe"
+		// https://blogs.msdn.microsoft.com/david.wang/2006/03/27/howto-detect-process-bitness/
+		if strings.EqualFold(os.Getenv("PROCESSOR_ARCHITECTURE"), "amd64") ||
+			strings.EqualFold(os.Getenv("PROCESSOR_ARCHITEW6432"), "amd64") {
+			suffix = "_amd64.exe"
+		}
+		assetName = assetName + suffix
 	}
 	sysproxyBytes, err := Asset(assetName)
 	if err != nil {
