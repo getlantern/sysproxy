@@ -16,6 +16,8 @@ fi
 
 BINPATH=../sysproxy-cmd/binaries
 
+# Check for a recent version of osslsigncode that can handle 32-bit Windows
+# binaries.
 osslsigncode_version=`osslsigncode --version 2>&1 | grep "using:" | cut -d " " -f 2 | cut -d "," -f 1`
 if [[ "$osslsigncode_version" < "1.7.1" ]]
 then
