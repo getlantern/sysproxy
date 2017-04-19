@@ -16,6 +16,12 @@ fi
 
 BINPATH=../sysproxy-cmd/binaries
 
+osslsigncode_version=`osslsigncode --version 2>&1 | grep "using:" | cut -d " " -f 2 | cut -d "," -f 1`
+if [[ "$osslsigncode_version" < "1.7.1" ]]
+then
+  die "$0: Please upgrade osslsigncode to at least version 1.7.1"
+fi
+
 osslsigncode sign -pkcs12 "$BNS_CERT" -pass "$BNS_CERT_PASS" -in $BINPATH/windows/sysproxy_386.exe -out $BINPATH/windows/sysproxy_386.exe || die "Could not sign windows 386"
 osslsigncode sign -pkcs12 "$BNS_CERT" -pass "$BNS_CERT_PASS" -in $BINPATH/windows/sysproxy_amd64.exe -out $BINPATH/windows/sysproxy_amd64.exe || die "Could not sign windows 386"
 go-bindata -nomemcopy -nocompress -pkg sysproxy -prefix $BINPATH/windows -o sysproxy_bytes_windows.go $BINPATH/windows
