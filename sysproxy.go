@@ -53,7 +53,7 @@ func EnsureHelperToolPresent(path string, prompt string, iconFullPath string) (e
 	return ensureElevatedOnDarwin(be, prompt, iconFullPath)
 }
 
-/* On tells OS to configure proxy through `sysproxyUrl` */
+/* On tells OS to configure proxy through `addr` as host:port */
 func On(addr string) (err error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
