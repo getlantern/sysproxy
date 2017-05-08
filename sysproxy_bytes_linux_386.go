@@ -69,7 +69,7 @@ func sysproxy() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindata_file_info{name: "sysproxy", size: 12159, mode: os.FileMode(511), modTime: time.Unix(1492654606, 0)}
+	info := bindata_file_info{name: "sysproxy", size: 12159, mode: os.FileMode(493), modTime: time.Unix(1494028153, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
