@@ -25,9 +25,9 @@ then
   die "$0: Please upgrade osslsigncode to at least version 1.7.1"
 fi
 
-osslsigncode sign -pkcs12 "$BNS_CERT" -pass "$BNS_CERT_PASS" -in $BINPATH/windows/sysproxy_386.exe -out $BINPATH/windows/sysproxy_386.exe || die "Could not sign windows 386"
-osslsigncode sign -pkcs12 "$BNS_CERT" -pass "$BNS_CERT_PASS" -in $BINPATH/windows/sysproxy_amd64.exe -out $BINPATH/windows/sysproxy_amd64.exe || die "Could not sign windows 386"
-go-bindata -nomemcopy -nocompress -pkg sysproxy -prefix $BINPATH/windows -o sysproxy_bytes_windows.go $BINPATH/windows
+tempdir=$(mktemp -d)
+osslsigncode sign -pkcs12 "$BNS_CERT" -pass "$BNS_CERT_PASS" -in ../proxytoggle/proxytoggle.exe -out $tempdir/sysproxy.exe || die "Could not sign windows 386"
+go-bindata -nomemcopy -nocompress -pkg sysproxy -prefix $tempdir -o sysproxy_bytes_windows.go $tempdir
 
 go-bindata -nomemcopy -nocompress -pkg sysproxy -prefix $BINPATH/linux_386 -o sysproxy_bytes_linux_386.go $BINPATH/linux_386
 go-bindata -nomemcopy -nocompress -pkg sysproxy -prefix $BINPATH/linux_amd64 -o sysproxy_bytes_linux_amd64.go $BINPATH/linux_amd64
