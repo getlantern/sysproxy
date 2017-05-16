@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 ###############################################################################
 #
 # This script regenerates the source files that embed the sysproxy-cmd executable.
@@ -5,7 +6,7 @@
 ###############################################################################
 
 function die() {
-  echo $*
+  echo "$@"
   exit 1
 }
 

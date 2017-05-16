@@ -3,7 +3,6 @@ package sysproxy
 import (
 	"fmt"
 	"net"
-	"os"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -35,11 +34,6 @@ func EnsureHelperToolPresent(path string, prompt string, iconFullPath string) (e
 	// Load different binaries for 32bit and 64bit Windows respectively.
 	if runtime.GOOS == "windows" {
 		suffix := "_386.exe"
-		// https://blogs.msdn.microsoft.com/david.wang/2006/03/27/howto-detect-process-bitness/
-		if strings.EqualFold(os.Getenv("PROCESSOR_ARCHITECTURE"), "amd64") ||
-			strings.EqualFold(os.Getenv("PROCESSOR_ARCHITEW6432"), "amd64") {
-			suffix = "_amd64.exe"
-		}
 		assetName = assetName + suffix
 	}
 	sysproxyBytes, err := Asset(assetName)
@@ -53,7 +47,7 @@ func EnsureHelperToolPresent(path string, prompt string, iconFullPath string) (e
 	return ensureElevatedOnDarwin(be, prompt, iconFullPath)
 }
 
-/* On tells OS to configure proxy through `addr` as host:port */
+// On tells OS to configure proxy through `addr` as host:port
 func On(addr string) (err error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -66,14 +60,20 @@ func On(addr string) (err error) {
 		return fmt.Errorf("call EnsureHelperToolPresent() first")
 	}
 
-	cmd := be.Command("on", host, port)
+	var cmd *exec.Cmd
+	if runtime.GOOS == "windows" {
+		cmd = be.Command(addr)
+	} else {
+		cmd = be.Command("on", host, port)
+	}
+
 	if err := run(cmd); err != nil {
 		return err
 	}
 	return verify(addr)
 }
 
-/* Off sets proxy mode back to direct/none */
+// Off sets proxy mode back to direct/none
 func Off(addr string) (err error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -85,7 +85,12 @@ func Off(addr string) (err error) {
 	if be == nil {
 		return fmt.Errorf("call EnsureHelperToolPresent() first")
 	}
-	cmd := be.Command("off", host, port)
+	var cmd *exec.Cmd
+	if runtime.GOOS == "windows" {
+		cmd = be.Command()
+	} else {
+		cmd = be.Command("off", host, port)
+	}
 	if err := run(cmd); err != nil {
 		return err
 	}
