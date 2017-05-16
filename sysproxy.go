@@ -33,7 +33,7 @@ func EnsureHelperToolPresent(path string, prompt string, iconFullPath string) (e
 	assetName := "sysproxy"
 	// Load different binaries for 32bit and 64bit Windows respectively.
 	if runtime.GOOS == "windows" {
-		suffix := "_386.exe"
+		suffix := ".exe"
 		assetName = assetName + suffix
 	}
 	sysproxyBytes, err := Asset(assetName)
