@@ -15,7 +15,7 @@ See 'example/main.go' for detailed usage.
 ### Embedding sysproxy-cmd
 
 sysproxy uses binaries from the
-[sysproxy-cmd](https://github.com/getlantern/sysproxy-cmd) project.
+[sysproxy-cmd](https://github.com/getlantern/sysproxy-cmd) project and on Windows from the [proxytoggle](https://github.com/getlantern/proxytoggle) project.
 
 To embed the binaries for different platforms, use the `sysproxy2go.sh` script.
 This script takes care of code signing the Windows and OS X executables.
