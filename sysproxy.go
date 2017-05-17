@@ -60,12 +60,7 @@ func On(addr string) (err error) {
 		return fmt.Errorf("call EnsureHelperToolPresent() first")
 	}
 
-	var cmd *exec.Cmd
-	if runtime.GOOS == "windows" {
-		cmd = be.Command(addr)
-	} else {
-		cmd = be.Command("on", host, port)
-	}
+	cmd := be.Command("on", host, port)
 
 	if err := run(cmd); err != nil {
 		return err
@@ -85,12 +80,7 @@ func Off(addr string) (err error) {
 	if be == nil {
 		return fmt.Errorf("call EnsureHelperToolPresent() first")
 	}
-	var cmd *exec.Cmd
-	if runtime.GOOS == "windows" {
-		cmd = be.Command()
-	} else {
-		cmd = be.Command("off", host, port)
-	}
+	cmd := be.Command("off", host, port)
 	if err := run(cmd); err != nil {
 		return err
 	}
