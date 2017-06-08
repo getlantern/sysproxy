@@ -109,13 +109,13 @@ func verify(expected string) error {
 	}
 	actual := string(out)
 	log.Debugf("Command %v output %v", cmd.Path, actual)
-	if !in(expected, actual) {
+	if !allEquals(expected, actual) {
 		return fmt.Errorf("Unexpected output: expect '%s', got '%s'", expected, actual)
 	}
 	return nil
 }
 
-func in(expected string, actual string) bool {
+func allEquals(expected string, actual string) bool {
 	if (expected == "") != (strings.TrimSpace(actual) == "") { // XOR
 		return false
 	}
