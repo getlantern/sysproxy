@@ -89,7 +89,7 @@ func Off(addr string) (err error) {
 	if err := run(cmd); err != nil {
 		return err
 	}
-	return verify(addr)
+	return verify("")
 }
 
 func run(cmd *exec.Cmd) error {
@@ -107,17 +107,24 @@ func verify(expected string) error {
 	if err != nil {
 		return err
 	}
-	str := string(out)
-	log.Debugf("Command %v output %v", cmd.Path, str)
-	if expected == "" && str != "" {
-		return fmt.Errorf("Unexpected output %s", str)
+	actual := string(out)
+	log.Debugf("Command %v output %v", cmd.Path, actual)
+	if !in(expected, actual) {
+		return fmt.Errorf("Unexpected output: expect '%s', got '%s'", expected, actual)
 	}
-	lines := strings.Split(str, "\n")
+	return nil
+}
+
+func in(expected string, actual string) bool {
+	if (expected == "") != (strings.TrimSpace(actual) == "") { // XOR
+		return false
+	}
+	lines := strings.Split(actual, "\n")
 	for _, l := range lines {
 		trimmed := strings.TrimSpace(l)
 		if trimmed != "" && trimmed != expected {
-			return fmt.Errorf("Unexpected output %s", l)
+			return false
 		}
 	}
-	return nil
+	return true
 }

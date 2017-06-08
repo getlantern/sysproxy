@@ -8,6 +8,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestIn(t *testing.T) {
+	assert.True(t, in("127.0.0.1:8888", "127.0.0.1:8888\n127.0.0.1:8888"))
+	assert.True(t, in("127.0.0.1:8888", "127.0.0.1:8888\n127.0.0.1:8888\n"))
+	assert.False(t, in("127.0.0.1:8888", "127.0.0.1:8888\n127.0.0.1:8887"))
+	assert.True(t, in("", "\n\n"))
+	assert.True(t, in("", "\r\n"))
+	assert.False(t, in("", "127.0.0.1:8888"))
+	assert.False(t, in("127.0.0.1:8888", ""))
+}
+
 func TestGetOutput(t *testing.T) {
 	path := path.Join(os.TempDir(), "sysproxy")
 	err := EnsureHelperToolPresent(path, "For test purpose", "")
