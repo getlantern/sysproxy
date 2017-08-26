@@ -2,7 +2,6 @@ package sysproxy
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"os/exec"
@@ -102,32 +101,32 @@ func Off(addr string) error {
 	return doOff()
 }
 
+type resultType struct {
+	out []byte
+	err error
+}
+
 func off(host string, port string) (func() error, error) {
 	cmd := be.Command("off", host, port)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		return nil, err
 	}
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return nil, err
-	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return nil, err
-	}
 	// Set up the command to run as a detached process
 	detach(cmd)
-	cmd.Start()
+	resultCh := make(chan *resultType)
+	go func() {
+		out, err := cmd.CombinedOutput()
+		resultCh <- &resultType{
+			out: out,
+			err: err,
+		}
+	}()
 	return func() error {
 		stdin.Close()
-		stdoutResult, _ := ioutil.ReadAll(stdout)
-		stderrResult, _ := ioutil.ReadAll(stderr)
-		stdout.Close()
-		stderr.Close()
-		err := cmd.Wait()
-		if err != nil {
-			return fmt.Errorf("Unable to execute %v: %s\n%s", cmd.Path, err, string(stdoutResult)+"\n"+string(stderrResult))
+		result := <-resultCh
+		if result.err != nil {
+			return fmt.Errorf("Unable to finish %v: %s\n%s", cmd.Path, result.err, string(result.out))
 		}
 		return verify("")
 	}, nil
