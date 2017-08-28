@@ -19,13 +19,13 @@ func main() {
 		fmt.Printf("Error EnsureHelperToolPresent: %s\n", err)
 		return
 	}
-	err = sysproxy.On("localhost:12345")
+	off, err := sysproxy.On("localhost:12345")
 	if err != nil {
 		fmt.Printf("Error set proxy: %s\n", err)
 		return
 	}
-	fmt.Println("proxy set, Enter continue...")
+	fmt.Println("proxy set, hit enter to continue (or kill the parent process)...")
 	var i int
 	fmt.Scanf("%d\n", &i)
-	sysproxy.Off("localhost:12345")
+	off()
 }

@@ -53,28 +53,35 @@ func EnsureHelperToolPresent(path string, prompt string, iconFullPath string) (e
 	return ensureElevatedOnDarwin(be, prompt, iconFullPath)
 }
 
-/* On tells OS to configure proxy through `addr` as host:port */
-func On(addr string) (err error) {
+// On tells OS to configure proxy through `addr` as host:port. If successful,
+// it returns a function that can be used to clear the system proxy setting.
+// If the current process terminates before the clear function is called, the
+// system proxy setting will be cleared anyway.
+func On(addr string) (func() error, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
-		return fmt.Errorf("Unable to parse address %v: %v", addr, err)
+		return nil, fmt.Errorf("Unable to parse address %v: %v", addr, err)
 	}
 
 	mu.Lock()
 	defer mu.Unlock()
 	if be == nil {
-		return fmt.Errorf("call EnsureHelperToolPresent() first")
+		return nil, fmt.Errorf("call EnsureHelperToolPresent() first")
 	}
 
 	cmd := be.Command("on", host, port)
 	if err := run(cmd); err != nil {
-		return err
+		return nil, err
 	}
-	return verify(addr)
+	err = verify(addr)
+	if err != nil {
+		return nil, err
+	}
+	return waitAndCleanup(host, port)
 }
 
-/* Off sets proxy mode back to direct/none */
-func Off(addr string) (err error) {
+// Off immediately unsets the proxy at addr as the system proxy.
+func Off(addr string) error {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
 		return fmt.Errorf("Unable to parse address %v: %v", addr, err)
@@ -85,11 +92,43 @@ func Off(addr string) (err error) {
 	if be == nil {
 		return fmt.Errorf("call EnsureHelperToolPresent() first")
 	}
+
 	cmd := be.Command("off", host, port)
 	if err := run(cmd); err != nil {
 		return err
 	}
 	return verify("")
+}
+
+type resultType struct {
+	out []byte
+	err error
+}
+
+func waitAndCleanup(host string, port string) (func() error, error) {
+	cmd := be.Command("wait-and-cleanup", host, port)
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return nil, err
+	}
+	// Set up the command to run as a detached process
+	detach(cmd)
+	resultCh := make(chan *resultType)
+	go func() {
+		out, err := cmd.CombinedOutput()
+		resultCh <- &resultType{
+			out: out,
+			err: err,
+		}
+	}()
+	return func() error {
+		stdin.Close()
+		result := <-resultCh
+		if result.err != nil {
+			return fmt.Errorf("Unable to finish %v: %s\n%s", cmd.Path, result.err, string(result.out))
+		}
+		return verify("")
+	}, nil
 }
 
 func run(cmd *exec.Cmd) error {
