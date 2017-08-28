@@ -77,7 +77,7 @@ func On(addr string) (func() error, error) {
 	if err != nil {
 		return nil, err
 	}
-	return off(host, port)
+	return waitAndCleanup(host, port)
 }
 
 // Off immediately unsets the proxy at addr as the system proxy.
@@ -93,12 +93,11 @@ func Off(addr string) error {
 		return fmt.Errorf("call EnsureHelperToolPresent() first")
 	}
 
-	doOff, err := off(host, port)
-	if err != nil {
+	cmd := be.Command("off", host, port)
+	if err := run(cmd); err != nil {
 		return err
 	}
-
-	return doOff()
+	return verify("")
 }
 
 type resultType struct {
@@ -106,8 +105,8 @@ type resultType struct {
 	err error
 }
 
-func off(host string, port string) (func() error, error) {
-	cmd := be.Command("off", host, port)
+func waitAndCleanup(host string, port string) (func() error, error) {
+	cmd := be.Command("wait-and-cleanup", host, port)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		return nil, err
