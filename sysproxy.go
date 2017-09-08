@@ -53,10 +53,10 @@ func EnsureHelperToolPresent(path string, prompt string, iconFullPath string) (e
 	return ensureElevatedOnDarwin(be, prompt, iconFullPath)
 }
 
-// On tells OS to configure proxy through `addr` as host:port. If successful,
-// it returns a function that can be used to clear the system proxy setting.
-// If the current process terminates before the clear function is called, the
-// system proxy setting will be cleared anyway.
+// On tells OS to configure proxy through `addr` as host:port. It always returns
+// a function that can be used to clear the system proxy setting. If the current
+// process terminates before the clear function is called, the system proxy
+// setting will be cleared anyway.
 func On(addr string) (func() error, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -70,14 +70,16 @@ func On(addr string) (func() error, error) {
 	}
 
 	cmd := be.Command("on", host, port)
-	if err := run(cmd); err != nil {
-		return nil, err
+	onErr := run(cmd)
+	off, offErr := waitAndCleanup(host, port)
+	if offErr != nil {
+		log.Errorf("Unable to prepare waitAndCleanup job: %v", offErr)
 	}
-	err = verify(addr)
-	if err != nil {
-		return nil, err
+	if onErr != nil {
+		return off, onErr
 	}
-	return waitAndCleanup(host, port)
+	verifyErr := verify(addr)
+	return off, verifyErr
 }
 
 // Off immediately unsets the proxy at addr as the system proxy.
