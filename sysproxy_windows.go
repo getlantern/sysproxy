@@ -4,8 +4,11 @@ package sysproxy
 
 import (
 	"os/exec"
+	"syscall"
 )
 
 func detach(cmd *exec.Cmd) {
-	// on Windows, we don't have to do anything special to detach process
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		CreationFlags: syscall.CREATE_NEW_PROCESS_GROUP,
+	}
 }
