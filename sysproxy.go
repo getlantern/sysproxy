@@ -62,6 +62,10 @@ func On(addr string) (func() error, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Unable to parse address %v: %v", addr, err)
 	}
+	ip := net.ParseIP(host)
+	if ip != nil && ip.To4() == nil {
+		host = "[" + host + "]"
+	}
 
 	mu.Lock()
 	defer mu.Unlock()
