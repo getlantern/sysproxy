@@ -30,12 +30,12 @@ var (
 func EnsureHelperToolPresent(path string, prompt string, iconFullPath string) (err error) {
 	mu.Lock()
 	defer mu.Unlock()
-	if sysproxy == nil || len(sysproxy) == 0 {
-		return fmt.Errorf("Unable to find binary: %v", sysproxy)
+	if len(sysproxy) == 0 {
+		return fmt.Errorf("unable to find binary: %v", sysproxy)
 	}
 	be, err = byteexec.New(sysproxy, path)
 	if err != nil {
-		return fmt.Errorf("Unable to extract helper tool: %v", err)
+		return fmt.Errorf("unable to extract helper tool: %v", err)
 	}
 	return ensureElevatedOnDarwin(be, prompt, iconFullPath)
 }
@@ -47,7 +47,7 @@ func EnsureHelperToolPresent(path string, prompt string, iconFullPath string) (e
 func On(addr string) (func() error, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
-		return nil, fmt.Errorf("Unable to parse address %v: %v", addr, err)
+		return nil, fmt.Errorf("unable to parse address %v: %v", addr, err)
 	}
 	ip := net.ParseIP(host)
 	if ip != nil && ip.To4() == nil {
@@ -77,7 +77,7 @@ func On(addr string) (func() error, error) {
 func Off(addr string) error {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
-		return fmt.Errorf("Unable to parse address %v: %v", addr, err)
+		return fmt.Errorf("unable to parse address %v: %v", addr, err)
 	}
 
 	mu.Lock()
@@ -118,7 +118,7 @@ func waitAndCleanup(host string, port string) (func() error, error) {
 		stdin.Close()
 		result := <-resultCh
 		if result.err != nil {
-			return fmt.Errorf("Unable to finish %v: %s\n%s", cmd.Path, result.err, string(result.out))
+			return fmt.Errorf("unable to finish %v: %s\n%s", cmd.Path, result.err, string(result.out))
 		}
 		return verify("")
 	}, nil
@@ -127,7 +127,7 @@ func waitAndCleanup(host string, port string) (func() error, error) {
 func run(cmd *exec.Cmd) error {
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("Unable to execute %v: %s\n%s", cmd.Path, err, string(out))
+		return fmt.Errorf("unable to execute %v: %s\n%s", cmd.Path, err, string(out))
 	}
 	log.Debugf("Command %v output %v", cmd.Path, string(out))
 	return nil
@@ -142,7 +142,7 @@ func verify(expected string) error {
 	actual := string(out)
 	log.Debugf("Command %v output %v", cmd.Path, actual)
 	if !allEquals(expected, actual) {
-		return fmt.Errorf("Unexpected output: expect '%s', got '%s'", expected, actual)
+		return fmt.Errorf("unexpected output: expect '%s', got '%s'", expected, actual)
 	}
 	return nil
 }
