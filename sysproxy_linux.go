@@ -1,6 +1,9 @@
 package sysproxy
 
 import (
+	"os/exec"
+	"syscall"
+
 	"github.com/getlantern/byteexec"
 )
 
