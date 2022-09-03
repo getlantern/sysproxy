@@ -4,6 +4,8 @@ import (
 	_ "embed"
 	"os/exec"
 	"syscall"
+
+	"github.com/getlantern/byteexec"
 )
 
 //go:embed binaries/windows/sysproxy_386.exe
