@@ -3,6 +3,7 @@ package sysproxy
 import (
 	_ "embed"
 	"fmt"
+	"os/exec"
 	"syscall"
 
 	"github.com/getlantern/byteexec"
@@ -25,4 +26,10 @@ func ensureElevatedOnDarwin(be *byteexec.Exec, prompt string, iconFullPath strin
 	}
 	cmd := elevate.WithPrompt(prompt).WithIcon(iconFullPath).Command(be.Filename, "setuid")
 	return run(cmd)
+}
+
+func detach(cmd *exec.Cmd) {
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Setpgid: true,
+	}
 }
