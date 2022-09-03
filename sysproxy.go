@@ -1,11 +1,10 @@
 package sysproxy
 
 import (
+	_ "embed"
 	"fmt"
 	"net"
-	"os"
 	"os/exec"
-	"runtime"
 	"strings"
 	"sync"
 
@@ -31,22 +30,10 @@ var (
 func EnsureHelperToolPresent(path string, prompt string, iconFullPath string) (err error) {
 	mu.Lock()
 	defer mu.Unlock()
-	assetName := "sysproxy"
-	// Load different binaries for 32bit and 64bit Windows respectively.
-	if runtime.GOOS == "windows" {
-		suffix := "_386.exe"
-		// https://blogs.msdn.microsoft.com/david.wang/2006/03/27/howto-detect-process-bitness/
-		if strings.EqualFold(os.Getenv("PROCESSOR_ARCHITECTURE"), "amd64") ||
-			strings.EqualFold(os.Getenv("PROCESSOR_ARCHITEW6432"), "amd64") {
-			suffix = "_amd64.exe"
-		}
-		assetName = assetName + suffix
+	if sysproxy == nil || len(sysproxy) == 0 {
+		return fmt.Errorf("Unable to find binary: %v", sysproxy)
 	}
-	sysproxyBytes, err := Asset(assetName)
-	if err != nil {
-		return fmt.Errorf("Unable to access sysproxy asset: %v", err)
-	}
-	be, err = byteexec.New(sysproxyBytes, path)
+	be, err = byteexec.New(sysproxy, path)
 	if err != nil {
 		return fmt.Errorf("Unable to extract helper tool: %v", err)
 	}
