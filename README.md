@@ -1,7 +1,7 @@
 # sysproxy
 
 [sysproxy](https://github.com/getlantern/sysproxy) is a simple Go library to
-toggle the system proxy on and off for Windows, Mac OS and Linux. It will
+toggle the system proxy on and off for Windows and MacOS. It will
 extract a helper tool and use it to actually change the system proxy settings.
 
 ```go
@@ -19,7 +19,7 @@ sysproxy uses binaries from the
 [sysproxy-cmd-darwin](https://github.com/getlantern/sysproxy-cmd-darwin).
 
 To embed the binaries for different platforms, use the `sysproxy2go.sh` script.
-This script takes care of code signing the Windows and OS X executables.
+This script takes care of code signing the Windows and MacOS executables.
 
 This script signs the Windows executable, which requires that
 [osslsigncode](http://sourceforge.net/projects/osslsigncode/) utility be
@@ -31,4 +31,4 @@ to point to [bns-cert.p12](https://github.com/getlantern/too-many-secrets/blob/m
 and its [password](https://github.com/getlantern/too-many-secrets/blob/master/build-installers/env-vars.txt#L3)
 so that the script can sign the Windows executable.
 
-This script also signs the MacOS executable, which requires you to install our MacOS signing certificate.
+This script also signs the MacOS executable, which requires you to install a MacOS signing certificate.
