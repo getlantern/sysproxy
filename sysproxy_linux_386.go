@@ -1,6 +1,7 @@
 package sysproxy
 
 import (
+	_ "embed"
 	"os/exec"
 	"syscall"
 
