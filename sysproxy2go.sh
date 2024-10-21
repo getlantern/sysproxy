@@ -32,5 +32,5 @@ osslsigncode sign -pkcs12 "$BNS_CERT" -pass "$BNS_CERT_PASS" -in $BINPATH/window
 cp $BINPATH/windows/sysproxy_386.exe binaries/windows
 cp $BINPATH/windows/sysproxy_amd64.exe binaries/windows
 
-codesign --options runtime --strict --timestamp --force --deep -r="designated => anchor trusted and identifier com.getlantern.lantern" -s "Developer ID Application: Innovate Labs LLC (4FYC28AXA2)" -v $BINPATH/darwin
+codesign --options runtime --strict --timestamp --force --deep -r="designated => anchor trusted and identifier com.getlantern.lantern" -s "Developer ID Application: Brave New Software Project, Inc (ACZRKC3LQ9)" -v $BINPATH/darwin
 cp $BINPATH/darwin binaries
